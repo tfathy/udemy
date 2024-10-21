@@ -1,4 +1,4 @@
-package com.example.dice_app
+package tfathy.dice_app
 
 import io.flutter.embedding.android.FlutterActivity
 

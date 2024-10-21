@@ -28,11 +28,12 @@ class _DiceRoller extends State<DiceRoller> {
           'assets/images/dice-$conter.png',
           width: 150,
         ),
-        TextButton(
+        ElevatedButton(
             onPressed: diceRollClick,
             child: const Text(
               'Roll Dice',
-              style: TextStyle(fontSize: 26, color: Colors.white),
+              style:
+                  TextStyle(fontSize: 26, color: Color.fromARGB(255, 2, 7, 74)),
             ))
       ],
     );

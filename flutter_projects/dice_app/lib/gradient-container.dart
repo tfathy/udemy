@@ -11,6 +11,6 @@ class GradientContainer extends StatelessWidget {
           gradient: LinearGradient(
               colors: colors, begin: Alignment.topRight, end: Alignment.center),
         ),
-        child: Center(child: DiceRoller()));
+        child: const Center(child: DiceRoller()));
   }
 }
