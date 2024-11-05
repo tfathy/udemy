@@ -1,3 +1,4 @@
+import 'package:expenses_tracker/widgets/chart/chart.dart';
 import 'package:expenses_tracker/widgets/expenses_list/expenses_list.dart';
 import 'package:expenses_tracker/models/expense.dart';
 import 'package:expenses_tracker/widgets/new_expense.dart';
@@ -30,34 +31,79 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+        useSafeArea: true,
+        isScrollControlled: true,
         context: context,
         builder: (ctx) {
-          return const NewExpense();
+          return NewExpense(_registedExpenses, _addExpense);
         });
+  }
+
+  void _addExpense(Expense expense) {
+    setState(() {
+      _registedExpenses.add(expense);
+    });
+  }
+
+  void _removeExpense(Expense expense) {
+    final expenseIndex = _registedExpenses.indexOf(expense);
+    setState(() {
+      _registedExpenses.remove(expense);
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: const Duration(seconds: 3),
+      content: const Text('Expense Deleted'),
+      action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _registedExpenses.insert(expenseIndex, expense);
+            });
+          }),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expenses Tracker'),
-        actions: [
-          IconButton(
-            onPressed: _openAddExpenseOverlay,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const Text("Chart is here"),
-          Expanded(
-            child: ExpensesList(
-              expenses: _registedExpenses,
-            ),
-          )
-        ],
-      ),
+    final width = MediaQuery.of(context).size.width;
+    Widget mainContent = const Center(
+      child: Text('No elements in the list. Start by clicking on +'),
     );
+    if (_registedExpenses.isNotEmpty) {
+      mainContent = ExpensesList(
+        expenses: _registedExpenses,
+        onRemoveExpense: _removeExpense,
+      );
+    }
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Expenses Tracker'),
+          actions: [
+            IconButton(
+              onPressed: _openAddExpenseOverlay,
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        body: width < 600
+            ? Column(
+                children: [
+                  Chart(expenses: _registedExpenses),
+                  Expanded(
+                    child: mainContent,
+                  )
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: Chart(expenses: _registedExpenses),
+                  ),
+                  Expanded(
+                    child: mainContent,
+                  )
+                ],
+              ));
   }
 }
